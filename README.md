@@ -1,6 +1,6 @@
 # Dependency
 
-- ROS kinect on Ubuntu 16.04
+- ROS Kinect on Ubuntu 16.04
 
 - PCL 1.9.1.99
 
