@@ -12,8 +12,12 @@ find_package(catkin REQUIRED COMPONENTS
         OpenCV
 	std_msgs
 	sensor_msgs
-
+ 	message_generation
 )
+
+add_message_files( FILES Data1d.msg Data2d.msg )
+generate_messages( DEPENDENCIES std_msgs )
+catkin_package(CATKIN_DEPENDS messge_runtime)
 
 include_directories(${PCL_INCLUDE_DIRS})
 include_directories(${catkin_INCLUDE_DIRS})

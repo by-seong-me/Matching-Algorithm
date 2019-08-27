@@ -25,7 +25,8 @@
 # include "cv_bridge/cv_bridge.h"
 
 #include "ros/ros.h"
-#include <std_msgs/Float64MultiArray.h>
+#include "matching_algorithm/Data1d.h"
+#include "matching_algorithm/Data2d.h"
 
 #define PI 3.14159265
 
@@ -668,13 +669,13 @@ int main(int argc, char** argv)
     sub_color = nh.subscribe("/camera/color/image_raw", 1, ImageCallback);
     sub_depth = nh.subscribe("/camera/aligned_depth_to_color/image_raw", 1, DepthCallback);
 
-    pub_red = nh.advertise<std_msgs::Float64MultiArray>("/color_matrix/red_matrix", 1);
-    pub_orange = nh.advertise<std_msgs::Float64MultiArray>("/color_matrix/orange_matrix", 1);
-    pub_yellow = nh.advertise<std_msgs::Float64MultiArray>("/color_matrix/yellow_matrix", 1);
-    pub_green = nh.advertise<std_msgs::Float64MultiArray>("/color_matrix/green_matrix", 1);
-    pub_blue = nh.advertise<std_msgs::Float64MultiArray>("/color_matrix/blue_matrix", 1);
-    pub_purple = nh.advertise<std_msgs::Float64MultiArray>("/color_matrix/purple_matrix", 1);
-    pub_brown = nh.advertise<std_msgs::Float64MultiArray>("/color_matrix/brown_matrix", 1);
+    pub_red = nh.advertise<matching_algorithm::Data2d>("/color_matrix/red_matrix", 1);
+    pub_orange = nh.advertise<matching_algorithm::Data2d>("/color_matrix/orange_matrix", 1);
+    pub_yellow = nh.advertise<matching_algorithm::Data2d>("/color_matrix/yellow_matrix", 1);
+    pub_green = nh.advertise<matching_algorithm::Data2d>("/color_matrix/green_matrix", 1);
+    pub_blue = nh.advertise<matching_algorithm::Data2d>("/color_matrix/blue_matrix", 1);
+    pub_purple = nh.advertise<matching_algorithm::Data2d>("/color_matrix/purple_matrix", 1);
+    pub_brown = nh.advertise<matching_algorithm::Data2d>("/color_matrix/brown_matrix", 1);
 
     ros::spin();
     return 0;
@@ -833,18 +834,16 @@ void GetBoundingBox()
     { 
         if(red_synthetic.points.size() == 3)
         {
-            //int answer = 0;
-            //answer = GetPose("red", red_synthetic, red_array); 
             if(GetPose("red", red_synthetic, red_array) == 0)
-            {                   //ros::Publisher pub = nh_.advertise<std_msgs::Float64MultiArray>("Red_Matrix", 5);
-                std_msgs::Float64MultiArray msg;
-                msg.data.resize(16);
-                for (int i = 0; i < 16; i++)
-                {   //msg.data[i] = red_array[i]; 
-                    msg.data[i] = red_array.at(i);
+            {   
+                matching_algorithm::Data2d msg;
+                msg.data.resize(4);
+                for (int i = 0; i < 4; i++)
+                {   msg.data[i].data.resize(4);
+                    for (int j = 0; j < 4; j++)
+                    { msg.data[i].data[j] = red_array[j + i*4]; } 
                 }
                 pub_red.publish(msg);  
-                //ros::spinOnce(); 
             }
         }
     }
@@ -854,12 +853,14 @@ void GetBoundingBox()
         {
             if(GetPose("orange", orange_synthetic, orange_array) == 0)
             {
-                std_msgs::Float64MultiArray msg;
-                msg.data.resize(16);
-
-                for (int i = 0; i < 16; i++)
-                    { msg.data[i] = orange_array.at(i); }
-                pub_orange.publish(msg);   
+                matching_algorithm::Data2d msg;
+                msg.data.resize(4);
+                for (int i = 0; i < 4; i++)
+                {   msg.data[i].data.resize(4);
+                    for (int j = 0; j < 4; j++)
+                    { msg.data[i].data[j] = orange_array[j + i*4]; } 
+                }
+                pub_red.publish(msg);   
             }
         }    
     }
@@ -870,12 +871,14 @@ void GetBoundingBox()
             if(GetPose("yellow", yellow_synthetic, yellow_array) == 0)
             {   
 
-                std_msgs::Float64MultiArray msg;
-                msg.data.resize(16);
-
-                for (int i = 0; i < 16; i++)
-                    { msg.data[i] = yellow_array.at(i); }
-                pub_yellow.publish(msg);  
+                matching_algorithm::Data2d msg;
+                msg.data.resize(4);
+                for (int i = 0; i < 4; i++)
+                {   msg.data[i].data.resize(4);
+                    for (int j = 0; j < 4; j++)
+                    { msg.data[i].data[j] = yellow_array[j + i*4]; } 
+                }
+                pub_red.publish(msg);  
                 
             }
         }
@@ -887,12 +890,14 @@ void GetBoundingBox()
             if(!GetPose("green", green_synthetic, green_array) == 1)
             {   
                 
-                std_msgs::Float64MultiArray msg;
-                msg.data.resize(16);
-
-                for (int i = 0; i < 16; i++)
-                    { msg.data[i] = green_array.at(i); }
-                pub_green.publish(msg); 
+                matching_algorithm::Data2d msg;
+                msg.data.resize(4);
+                for (int i = 0; i < 4; i++)
+                {   msg.data[i].data.resize(4);
+                    for (int j = 0; j < 4; j++)
+                    { msg.data[i].data[j] = green_array[j + i*4]; } 
+                }
+                pub_red.publish(msg);  
             }
         }
     }
@@ -903,12 +908,15 @@ void GetBoundingBox()
             if(GetPose("blue", blue_synthetic, blue_array) == 0)
             {
 
-                std_msgs::Float64MultiArray msg;
-                msg.data.resize(16);
-
-                for (int i = 0; i < 16; i++)
-                    { msg.data[i] = blue_array.at(i); }
-                pub_blue.publish(msg);   
+                matching_algorithm::Data2d msg;
+                msg.data.resize(4);
+                for (int i = 0; i < 4; i++)
+                {   msg.data[i].data.resize(5);
+                    for (int j = 0; j < 4; j++)
+                    { msg.data[i].data[j] = blue_array[j + i*4]; } 
+                    msg.data[i].data[4] = "\n";
+                }
+                pub_red.publish(msg);   
 
             }
         }
@@ -919,12 +927,14 @@ void GetBoundingBox()
         {
             if(GetPose("purple", purple_synthetic, purple_array) == 0 && purple_array.size() == 16)
             {
-                std_msgs::Float64MultiArray msg;
-                msg.data.resize(16);
-
-                for (int i = 0; i < 16; i++)
-                    { msg.data[i] = purple_array.at(i); }
-                pub_purple.publish(msg); 
+                matching_algorithm::Data2d msg;
+                msg.data.resize(4);
+                for (int i = 0; i < 4; i++)
+                {   msg.data[i].data.resize(4);
+                    for (int j = 0; j < 4; j++)
+                    { msg.data[i].data[j] = purple_array[j + i*4]; } 
+                }
+                pub_red.publish(msg);  
             }
         }
     }
@@ -935,14 +945,14 @@ void GetBoundingBox()
             if((GetPose("brown", brown_synthetic, brown_array)) == 0)
             {   
 
-                std_msgs::Float64MultiArray msg;
-                msg.data.resize(16);
-
-
-                for (int i = 0; i < 16; i++)
-                {   msg.data[i] = brown_array.at(i); }
-
-                pub_brown.publish(msg); 
+                matching_algorithm::Data2d msg;
+                msg.data.resize(4);
+                for (int i = 0; i < 4; i++)
+                {   msg.data[i].data.resize(4);
+                    for (int j = 0; j < 4; j++)
+                    { msg.data[i].data[j] = brown_array[j + i*4]; } 
+                }
+                pub_red.publish(msg);  
             }
         }
     }
