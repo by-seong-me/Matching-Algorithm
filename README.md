@@ -1,7 +1,10 @@
 # Dependency
 
-- PCL
-- OpenCV
+- PCL 1.9.1.99
+
+- OpenCV 3.3.1
+
+-
 
 # How to launch a code
 
